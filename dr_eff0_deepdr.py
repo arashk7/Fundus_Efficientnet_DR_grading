@@ -44,7 +44,7 @@ def metricsCompute(predict, label, labels=[0, 1, 2, 3, 4]):
 # Load Datasets
 BASE_TRAIN_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-training'
 # BASE_TRAIN_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-training/regular-fundus-training'
-BASE_VAL_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-validation/regular-fundus-validation'
+BASE_VAL_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-validation'
 # train_dataset = pd.read_csv(os.path.join(BASE_TRAIN_PATH, 'regular-fundus-training.csv'))
 # final_test_dataset = pd.read_csv(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation.csv'))
 #
@@ -66,7 +66,7 @@ class Dataset(data.Dataset):
         label = self.train_set['patient_DR_Level'][idx]
         path = self.train_path+ file_name
         img = Image.open(path)  # Loading Image
-        # img = Image.open(file_name)  # Loading Image
+
         if self.transform is not None:
             img = self.transform(img)
         return img, label
@@ -83,10 +83,15 @@ transform_train = transforms.Compose([transforms.Resize((224, 224)), transforms.
     torchvision.transforms.RandomRotation(10),
     transforms.RandomHorizontalFlip()], 0.7),
                                       transforms.ToTensor()])
-
+# train data generator
 training_set = Dataset(os.path.join(BASE_TRAIN_PATH, 'regular-fundus-training', 'regular-fundus-training.csv'), BASE_TRAIN_PATH,
                        transform=transform_train)
 training_generator = data.DataLoader(training_set, **params)
+
+# validation data generator
+validation_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'), BASE_VAL_PATH,
+                       transform=transform_train)
+validation_generator = data.DataLoader(validation_set, **params)
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -155,6 +160,39 @@ for epoch in range(epochs):
             print('Accuracy of %5s : %2d %%' % (classes[k], 100 * class_correct[k] / class_total[k]))
 
     print('[%d epoch] Accuracy of the network on the Training images: %d %%' % (epoch + 1, 100 * correct / total))
+
+    # Validation
+    for i, data in enumerate(validation_generator, 0):
+        inputs, labels = data
+        t0 = time()
+        inputs, labels = inputs.to(device), labels.to(device)
+        labels = eye[labels]
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, torch.max(labels, 1)[1])
+        _, predicted = torch.max(outputs, 1)
+        _, labels = torch.max(labels, 1)
+        c = (predicted == labels.data).squeeze()
+        correct += (predicted == labels).sum().item()
+        total += labels.size(0)
+        accuracy = float(correct) / float(total)
+
+        history_accuracy.append(accuracy)
+        history_loss.append(loss)
+
+        loss.backward()
+        optimizer.step()
+
+        for j in range(labels.size(0)):
+            label = labels[j]
+            class_correct[label] += c[j].item()
+            class_total[label] += 1
+
+        running_loss += loss.item()
+
+        print("val Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ", accuracy,
+              "Time ", round(time() - t0, 2), "s")
+
 
     if epoch % 10 == 0 or epoch == 0:
         torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
