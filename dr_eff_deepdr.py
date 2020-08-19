@@ -52,7 +52,7 @@ class Dataset(data.Dataset):
         return img, label
 
 
-params = {'batch_size': 16,
+params = {'batch_size': 12,
           'shuffle': True
           }
 ''' Hyper Parameters '''
@@ -64,9 +64,9 @@ learning_rate = 1e-3
 ''' The learning rate '''
 
 transform_train = transforms.Compose([transforms.Resize((224, 224)), transforms.RandomApply([
-    torchvision.transforms.RandomRotation(10),
-    transforms.RandomHorizontalFlip()], 0.7),
-                                      transforms.ToTensor()])
+                                        torchvision.transforms.RandomRotation(10),
+                                        transforms.RandomHorizontalFlip()], 0.7),
+                                                          transforms.ToTensor()])
 ''' Transform Images to specific size and randomly rotate and flip them '''
 
 training_set = Dataset(os.path.join(BASE_TRAIN_PATH, 'regular-fundus-training', 'regular-fundus-training.csv'),
@@ -89,7 +89,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ''' Initialize Cuda if it is available '''
 print(device)
 
-model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=5)
+model = EfficientNet.from_pretrained('efficientnet-b3', num_classes=5)
 ''' Loaded pretrained weights for efficientnet-b0 '''
 model.to(device)
 
