@@ -29,7 +29,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.dr_eff0_deepdr">
+  <component name="RunManager" selected="Python.dr_eff_deepdr">
     <configuration name="dr_eff0_aptos" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Fundus_Efficientnet_DR_grading" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -96,8 +96,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="dr_eff_deepdr" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Fundus_Efficientnet_DR_grading" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dr_eff_deepdr.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dr_eff_deepdr" />
         <item itemvalue="Python.dr_eff0_deepdr" />
         <item itemvalue="Python.dr_eff0_aptos" />
         <item itemvalue="Python.dr_eff0_simple" />
@@ -115,7 +138,8 @@
       <option name="presentableId" value="Default" />
       <updated>1597381900870</updated>
       <workItem from="1597381902044" duration="1352000" />
-      <workItem from="1597646391389" duration="8319000" />
+      <workItem from="1597646391389" duration="9349000" />
+      <workItem from="1597801194746" duration="5500000" />
     </task>
     <servers />
   </component>
@@ -127,38 +151,38 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1597389404124" />
-    <state width="2005" height="305" key="GridCell.Tab.0.bottom" timestamp="1597727156310">
+    <state width="2005" height="305" key="GridCell.Tab.0.bottom" timestamp="1597814253884">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="305" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1597727156310" />
-    <state width="2005" height="305" key="GridCell.Tab.0.center" timestamp="1597727156310">
+    <state width="2005" height="305" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1597814253884" />
+    <state width="2005" height="305" key="GridCell.Tab.0.center" timestamp="1597814253884">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="305" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1597727156310" />
-    <state width="2005" height="305" key="GridCell.Tab.0.left" timestamp="1597727156310">
+    <state width="2005" height="305" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1597814253884" />
+    <state width="2005" height="305" key="GridCell.Tab.0.left" timestamp="1597814253884">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="305" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1597727156310" />
-    <state width="2005" height="305" key="GridCell.Tab.0.right" timestamp="1597727156310">
+    <state width="2005" height="305" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1597814253884" />
+    <state width="2005" height="305" key="GridCell.Tab.0.right" timestamp="1597814253884">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="305" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1597727156310" />
-    <state width="2005" height="376" key="GridCell.Tab.1.bottom" timestamp="1597725016344">
+    <state width="2005" height="305" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1597814253884" />
+    <state width="2005" height="376" key="GridCell.Tab.1.bottom" timestamp="1597728738644">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1597725016344" />
-    <state width="2005" height="376" key="GridCell.Tab.1.center" timestamp="1597725016344">
+    <state width="2005" height="376" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1597728738644" />
+    <state width="2005" height="376" key="GridCell.Tab.1.center" timestamp="1597728738644">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1597725016344" />
-    <state width="2005" height="376" key="GridCell.Tab.1.left" timestamp="1597725016344">
+    <state width="2005" height="376" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1597728738644" />
+    <state width="2005" height="376" key="GridCell.Tab.1.left" timestamp="1597728738644">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1597725016344" />
-    <state width="2005" height="376" key="GridCell.Tab.1.right" timestamp="1597725016344">
+    <state width="2005" height="376" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1597728738644" />
+    <state width="2005" height="376" key="GridCell.Tab.1.right" timestamp="1597728738644">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1597725016344" />
+    <state width="2005" height="376" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1597728738644" />
     <state x="533" y="201" key="SettingsEditor" timestamp="1597382011889">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -178,6 +202,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_aptos.coverage" NAME="dr_eff0_aptos Coverage Results" MODIFIED="1597648493455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_simple.coverage" NAME="dr_eff0_simple Coverage Results" MODIFIED="1597646674502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_deepdr.coverage" NAME="dr_eff0_deepdr Coverage Results" MODIFIED="1597727156300" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_deepdr.coverage" NAME="dr_eff0_deepdr Coverage Results" MODIFIED="1597808513199" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_deepdr.coverage" NAME="dr_eff_deepdr Coverage Results" MODIFIED="1597809535977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -91,6 +91,7 @@ training_generator = data.DataLoader(training_set, **params)
 # validation data generator
 validation_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'), BASE_VAL_PATH,
                        transform=transform_train)
+
 validation_generator = data.DataLoader(validation_set, **params)
 
 use_cuda = torch.cuda.is_available()
@@ -181,7 +182,7 @@ for epoch in range(epochs):
         history_loss.append(loss)
 
         loss.backward()
-        optimizer.step()
+        # optimizer.step()
 
         for j in range(labels.size(0)):
             label = labels[j]
@@ -194,14 +195,15 @@ for epoch in range(epochs):
               "Time ", round(time() - t0, 2), "s")
 
 
+
     if epoch % 10 == 0 or epoch == 0:
         torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
 
 torch.save(model.state_dict(), os.path.join(PATH_SAVE, 'Last_epoch' + str(accuracy) + '.pth'))
 
 #
-# plt.plot(history_accuracy)
-# plt.plot(history_loss)
+plt.plot(history_accuracy)
+plt.plot(history_loss)
 
 
 # model.load_state_dict(torch.load('./Weights/41_0.9729655925723648.pth'))
