@@ -118,7 +118,11 @@ classes = [0, 1, 2, 3, 4]
 ''' Make a ist of classes '''
 
 history_accuracy = []
+''' List accuracies of all epochs '''
+
 history_loss = []
+''' List losses of all epochs '''
+
 epochs = 50
 ''' Number of epochs '''
 
