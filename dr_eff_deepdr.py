@@ -52,7 +52,7 @@ class Dataset(data.Dataset):
         return img, label
 
 
-params = {'batch_size': 12,
+params = {'batch_size': 16,
           'shuffle': True
           }
 ''' Hyper Parameters '''
@@ -89,7 +89,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ''' Initialize Cuda if it is available '''
 print(device)
 
-model = EfficientNet.from_pretrained('efficientnet-b3', num_classes=5)
+model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=5)
 ''' Loaded pretrained weights for efficientnet-b0 '''
 model.to(device)
 
@@ -97,7 +97,8 @@ print(summary(model, input_size=(3, 512, 512)))
 ''' Display the model structure '''
 
 PATH_SAVE = './Weights/'
-''' Set the directory to record model's weights'''
+''' Set the directory to record model's weights '''
+
 if (not os.path.exists(PATH_SAVE)):
     os.mkdir(PATH_SAVE)
     ''' If the directory does not exist, it will be created there '''
@@ -145,7 +146,7 @@ for epoch in range(epochs):
 
     vl_class_correct = list(0. for _ in classes)
     vl_class_total = list(0. for _ in classes)
-
+    model.train()
     for i, data in enumerate(training_generator, 0):
         ''' run through batches of data from training data generator '''
 
@@ -185,39 +186,41 @@ for epoch in range(epochs):
 
     correct = 0
     total = 0
-    for i, data in enumerate(validation_generator, 0):
-        ''' run through batches of data from validation data generator '''
+    model.eval()
+    with torch.no_grad():
+        for i, data in enumerate(validation_generator, 0):
+            ''' run through batches of data from validation data generator '''
 
-        inputs, labels = data
-        t0 = time()
-        inputs, labels = inputs.to(device), labels.to(device)
-        labels = eye[labels]
-        ''' Set the optimizer gradients to zero '''
-        outputs = model(inputs)
+            inputs, labels = data
+            t0 = time()
+            inputs, labels = inputs.to(device), labels.to(device)
+            labels = eye[labels]
+            ''' Set the optimizer gradients to zero '''
+            outputs = model(inputs)
 
-        loss = criterion(outputs, torch.max(labels, 1)[1])
-        _, predicted = torch.max(outputs, 1)
-        _, labels = torch.max(labels, 1)
-        c = (predicted == labels.data).squeeze()
-        correct += (predicted == labels).sum().item()
-        total += labels.size(0)
-        accuracy = float(correct) / float(total)
-        ''' Calculate total accuracy '''
+            loss = criterion(outputs, torch.max(labels, 1)[1])
+            _, predicted = torch.max(outputs, 1)
+            _, labels = torch.max(labels, 1)
+            c = (predicted == labels.data).squeeze()
+            correct += (predicted == labels).sum().item()
+            total += labels.size(0)
+            accuracy = float(correct) / float(total)
+            ''' Calculate total accuracy '''
 
-        val_history_accuracy.append(accuracy)
-        val_history_loss.append(loss)
+            val_history_accuracy.append(accuracy)
+            val_history_loss.append(loss)
 
-        loss.backward()
+            # loss.backward()
 
-        for j in range(labels.size(0)):
-            label = labels[j]
-            vl_class_correct[label] += c[j].item()
-            vl_class_total[label] += 1
+            for j in range(labels.size(0)):
+                label = labels[j]
+                vl_class_correct[label] += c[j].item()
+                vl_class_total[label] += 1
 
-        running_loss += loss.item()
+            running_loss += loss.item()
 
-        print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ", accuracy,
-              "Time ", round(time() - t0, 2), "s")
+            print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ", accuracy,
+                  "Time ", round(time() - t0, 2), "s")
 
     for k in range(len(classes)):
         if (vl_class_total[k] != 0):
