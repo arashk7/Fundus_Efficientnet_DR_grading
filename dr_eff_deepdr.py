@@ -91,7 +91,7 @@ epochs = 100
 learning_rate = 1e-3
 ''' The learning rate '''
 
-transform_train = transforms.Compose([transforms.Resize((100, 100)), transforms.RandomApply([
+transform_train = transforms.Compose([transforms.Resize((512, 512)), transforms.RandomApply([
     torchvision.transforms.RandomRotation(30),
     transforms.RandomHorizontalFlip()], 0.7),
                                       transforms.ToTensor()])
