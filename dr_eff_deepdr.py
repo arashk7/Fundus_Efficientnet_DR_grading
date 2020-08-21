@@ -14,6 +14,8 @@ from torch.utils import data
 from torch.autograd import Variable
 import torchvision.transforms as transforms
 from efficientnet_pytorch import EfficientNet
+from torch.utils.data.sampler import SubsetRandomSampler
+from pytorchtools import EarlyStopping
 from sklearn.metrics import cohen_kappa_score, precision_score, recall_score, f1_score
 import os
 
@@ -64,24 +66,42 @@ learning_rate = 1e-3
 ''' The learning rate '''
 
 transform_train = transforms.Compose([transforms.Resize((224, 224)), transforms.RandomApply([
-                                        torchvision.transforms.RandomRotation(10),
-                                        transforms.RandomHorizontalFlip()], 0.7),
-                                                          transforms.ToTensor()])
+    torchvision.transforms.RandomRotation(10),
+    transforms.RandomHorizontalFlip()], 0.7),
+                                      transforms.ToTensor()])
 ''' Transform Images to specific size and randomly rotate and flip them '''
 
 training_set = Dataset(os.path.join(BASE_TRAIN_PATH, 'regular-fundus-training', 'regular-fundus-training.csv'),
                        BASE_TRAIN_PATH,
                        transform=transform_train)
+
+valid_size = 0.2
+''' Percentage of training set to use as validation '''
+
+# obtain training indices that will be used for validation
+num_train = len(training_set)
+indices = list(range(num_train))
+np.random.shuffle(indices)
+split = int(np.floor(valid_size * num_train))
+train_idx, valid_idx = indices[split:], indices[:split]
+
+# define samplers for obtaining training and validation batches
+train_sampler = SubsetRandomSampler(train_idx)
+valid_sampler = SubsetRandomSampler(valid_idx)
+
 ''' Make a dataset of the training set '''
-training_generator = data.DataLoader(training_set, **params)
+
+training_generator = data.DataLoader(training_set, sampler=train_sampler, batch_size=16)
+''' Train generator with the provided hyper parameters '''
+validation_generator = data.DataLoader(training_set, sampler=valid_sampler, batch_size=16)
 ''' Train generator with the provided hyper parameters '''
 
-validation_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
-                         BASE_VAL_PATH,
-                         transform=transform_train)
+test_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
+                   BASE_VAL_PATH,
+                   transform=transform_train)
 ''' Make a dataset of the validation set '''
 
-validation_generator = data.DataLoader(validation_set, **params)
+test_generator = data.DataLoader(test_set, **params)
 ''' Validation generator with the provided hyper parameters '''
 
 use_cuda = torch.cuda.is_available()
@@ -132,63 +152,138 @@ val_history_loss = []
 epochs = 50
 ''' Number of epochs '''
 
-for epoch in range(epochs):
-    '''
-    Epochs loop
-    '''
+
+early_stopping = EarlyStopping(patience=3, verbose=True)
+
+training = True
+testing = True
+
+if training:
+    for epoch in range(epochs):
+        '''
+        Epochs loop
+        '''
+        running_loss = 0.0
+        ''' Set the loss to zero '''
+
+        correct = 0
+        total = 0
+        tr_class_correct = list(0. for _ in classes)
+        tr_class_total = list(0. for _ in classes)
+
+        vl_class_correct = list(0. for _ in classes)
+        vl_class_total = list(0. for _ in classes)
+
+        model.train()
+        for i, data in enumerate(training_generator, 0):
+            ''' run through batches of data from training data generator '''
+
+            inputs, labels = data
+            t0 = time()
+            inputs, labels = inputs.to(device), labels.to(device)
+            labels = eye[labels]
+            optimizer.zero_grad()
+            ''' Set the optimizer gradients to zero '''
+            outputs = model(inputs)
+
+            loss = criterion(outputs, torch.max(labels, 1)[1])
+            _, predicted = torch.max(outputs, 1)
+            _, labels = torch.max(labels, 1)
+            c = (predicted == labels.data).squeeze()
+            correct += (predicted == labels).sum().item()
+            total += labels.size(0)
+            accuracy = float(correct) / float(total)
+
+            train_history_accuracy.append(accuracy)
+            train_history_loss.append(loss)
+
+            loss.backward()
+            optimizer.step()
+
+            for j in range(labels.size(0)):
+                label = labels[j]
+                tr_class_correct[label] += c[j].item()
+                tr_class_total[label] += 1
+
+            running_loss += loss.item()
+
+            print("Train Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ",
+                  accuracy,
+                  "Time ", round(time() - t0, 2), "s")
+
+        print('[%d epoch] Accuracy of the network on the training images: %d %%' % (epoch + 1, 100 * correct / total))
+
+        correct = 0
+        total = 0
+        model.eval()
+        with torch.no_grad():
+            for i, data in enumerate(validation_generator, 0):
+                ''' run through batches of data from validation data generator '''
+
+                inputs, labels = data
+                t0 = time()
+                inputs, labels = inputs.to(device), labels.to(device)
+                labels = eye[labels]
+                ''' Set the optimizer gradients to zero '''
+                outputs = model(inputs)
+
+                loss = criterion(outputs, torch.max(labels, 1)[1])
+                _, predicted = torch.max(outputs, 1)
+                _, labels = torch.max(labels, 1)
+                c = (predicted == labels.data).squeeze()
+                correct += (predicted == labels).sum().item()
+                total += labels.size(0)
+                accuracy = float(correct) / float(total)
+                ''' Calculate total accuracy '''
+
+                val_history_accuracy.append(accuracy)
+                val_history_loss.append(loss)
+
+                # loss.backward()
+
+                for j in range(labels.size(0)):
+                    label = labels[j]
+                    vl_class_correct[label] += c[j].item()
+                    vl_class_total[label] += 1
+
+                running_loss += loss.item()
+
+                print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1),
+                      " Accuracy : ", accuracy,
+                      "Time ", round(time() - t0, 2), "s")
+
+        for k in range(len(classes)):
+            if (vl_class_total[k] != 0):
+                print(
+                    'Validation accuracy of %5s : %2d %%' % (classes[k], 100 * vl_class_correct[k] / vl_class_total[k]))
+
+        print('[%d epoch] Accuracy of the network on the Validation images: %d %%' % (epoch + 1, 100 * correct / total))
+
+        if epoch % 10 == 0 or epoch == 0:
+            torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
+
+        early_stopping(running_loss, model)
+
+        if early_stopping.early_stop:
+            print("Early stopping")
+            break
+
+if testing:
+
+    model.load_state_dict(torch.load('checkpoint.pt'))
+    ''' Load the last checkpoint with the best model '''
     running_loss = 0.0
     ''' Set the loss to zero '''
 
     correct = 0
     total = 0
-    tr_class_correct = list(0. for _ in classes)
-    tr_class_total = list(0. for _ in classes)
 
     vl_class_correct = list(0. for _ in classes)
     vl_class_total = list(0. for _ in classes)
-    model.train()
-    for i, data in enumerate(training_generator, 0):
-        ''' run through batches of data from training data generator '''
 
-        inputs, labels = data
-        t0 = time()
-        inputs, labels = inputs.to(device), labels.to(device)
-        labels = eye[labels]
-        optimizer.zero_grad()
-        ''' Set the optimizer gradients to zero '''
-        outputs = model(inputs)
-
-        loss = criterion(outputs, torch.max(labels, 1)[1])
-        _, predicted = torch.max(outputs, 1)
-        _, labels = torch.max(labels, 1)
-        c = (predicted == labels.data).squeeze()
-        correct += (predicted == labels).sum().item()
-        total += labels.size(0)
-        accuracy = float(correct) / float(total)
-
-        train_history_accuracy.append(accuracy)
-        train_history_loss.append(loss)
-
-        loss.backward()
-        optimizer.step()
-
-        for j in range(labels.size(0)):
-            label = labels[j]
-            tr_class_correct[label] += c[j].item()
-            tr_class_total[label] += 1
-
-        running_loss += loss.item()
-
-        print("Train Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ", accuracy,
-              "Time ", round(time() - t0, 2), "s")
-
-    print('[%d epoch] Accuracy of the network on the training images: %d %%' % (epoch + 1, 100 * correct / total))
-
-    correct = 0
-    total = 0
     model.eval()
     with torch.no_grad():
-        for i, data in enumerate(validation_generator, 0):
+        for i, data in enumerate(test_generator, 0):
             ''' run through batches of data from validation data generator '''
 
             inputs, labels = data
@@ -219,14 +314,13 @@ for epoch in range(epochs):
 
             running_loss += loss.item()
 
-            print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ", accuracy,
+            print("Validation Epoch : ", 1 + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1),
+                  " Accuracy : ", accuracy,
                   "Time ", round(time() - t0, 2), "s")
 
     for k in range(len(classes)):
         if (vl_class_total[k] != 0):
-            print('Validation accuracy of %5s : %2d %%' % (classes[k], 100 * vl_class_correct[k] / vl_class_total[k]))
+            print(
+                'Validation accuracy of %5s : %2d %%' % (classes[k], 100 * vl_class_correct[k] / vl_class_total[k]))
 
-    print('[%d epoch] Accuracy of the network on the Validation images: %d %%' % (epoch + 1, 100 * correct / total))
-
-    if epoch % 10 == 0 or epoch == 0:
-        torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
+    print('[%d epoch] Accuracy of the network on the Validation images: %d %%' % (1 + 1, 100 * correct / total))
