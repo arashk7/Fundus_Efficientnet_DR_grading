@@ -19,12 +19,36 @@ from pytorchtools import EarlyStopping
 from sklearn.metrics import cohen_kappa_score, precision_score, recall_score, f1_score
 import os
 
+
+# BASE_TRAIN_PATH = '/home/arash/Projects/Dataset/DeepDR'
 BASE_TRAIN_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-training'
 ''' Training Dataset Directory '''
 
+# BASE_VAL_PATH = '/home/arash/Projects/Dataset/DeepDR'
 BASE_VAL_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-validation'
 ''' Validation Dataset Directory '''
 
+
+def metricsCompute(predict, label, labels=[0, 1, 2, 3, 4]):
+    ap = []
+    recall = []
+    f1 = []
+    for p in labels:
+        fake_label = (label == p)
+        fake_predict = (predict == p)
+
+        ap.append(precision_score(fake_label.ravel(), fake_predict.ravel()))
+        recall.append(recall_score(fake_label.ravel(), fake_predict.ravel()))
+        f1.append(f1_score(fake_label.ravel(), fake_predict.ravel()))
+
+    kappa = cohen_kappa_score(predict, label, weights='quadratic')
+
+    return np.array(ap), np.array(recall), np.array(f1), kappa
+
+def kappa_compute(predict, label):
+    kappa = cohen_kappa_score(predict, label, weights='quadratic')
+
+    return kappa
 
 class Dataset(data.Dataset):
     def __init__(self, csv_path, images_path, transform=None):
@@ -47,14 +71,16 @@ class Dataset(data.Dataset):
         file_name = self.train_set['image_path'][idx]
         label = self.train_set['patient_DR_Level'][idx]
         path = self.train_path + file_name
+        path = path.replace('\\', '/')
         img = Image.open(path)  # Loading Image
 
         if self.transform is not None:
             img = self.transform(img)
         return img, label
 
+batch_size = 16
 
-params = {'batch_size': 16,
+params = {'batch_size': batch_size,
           'shuffle': True
           }
 ''' Hyper Parameters '''
@@ -65,8 +91,8 @@ epochs = 100
 learning_rate = 1e-3
 ''' The learning rate '''
 
-transform_train = transforms.Compose([transforms.Resize((224, 224)), transforms.RandomApply([
-    torchvision.transforms.RandomRotation(10),
+transform_train = transforms.Compose([transforms.Resize((100, 100)), transforms.RandomApply([
+    torchvision.transforms.RandomRotation(30),
     transforms.RandomHorizontalFlip()], 0.7),
                                       transforms.ToTensor()])
 ''' Transform Images to specific size and randomly rotate and flip them '''
@@ -91,9 +117,9 @@ valid_sampler = SubsetRandomSampler(valid_idx)
 
 ''' Make a dataset of the training set '''
 
-training_generator = data.DataLoader(training_set, sampler=train_sampler, batch_size=16)
+training_generator = data.DataLoader(training_set, sampler=train_sampler, batch_size=batch_size)
 ''' Train generator with the provided hyper parameters '''
-validation_generator = data.DataLoader(training_set, sampler=valid_sampler, batch_size=16)
+validation_generator = data.DataLoader(training_set, sampler=valid_sampler, batch_size=batch_size)
 ''' Train generator with the provided hyper parameters '''
 
 test_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
@@ -152,13 +178,13 @@ val_history_loss = []
 epochs = 50
 ''' Number of epochs '''
 
-
 early_stopping = EarlyStopping(patience=3, verbose=True)
 
 training = True
 testing = True
 
 if training:
+    #model.load_state_dict(torch.load('checkpoint.pt'))
     for epoch in range(epochs):
         '''
         Epochs loop
@@ -215,6 +241,8 @@ if training:
 
         correct = 0
         total = 0
+        predict_list = []
+        label_list = []
         model.eval()
         with torch.no_grad():
             for i, data in enumerate(validation_generator, 0):
@@ -247,7 +275,8 @@ if training:
                     vl_class_total[label] += 1
 
                 running_loss += loss.item()
-
+                predict_list.append(predicted)
+                label_list.append(labels)
                 print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1),
                       " Accuracy : ", accuracy,
                       "Time ", round(time() - t0, 2), "s")
@@ -258,6 +287,10 @@ if training:
                     'Validation accuracy of %5s : %2d %%' % (classes[k], 100 * vl_class_correct[k] / vl_class_total[k]))
 
         print('[%d epoch] Accuracy of the network on the Validation images: %d %%' % (epoch + 1, 100 * correct / total))
+
+        # kappa = kappa_compute(np.array(predict_list), np.array(label_list))
+        # print('kappaaaaaaaaaaa')
+        # print(kappa)
 
         # if epoch % 10 == 0 or epoch == 0:
         #     torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
