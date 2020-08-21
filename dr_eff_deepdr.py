@@ -259,8 +259,8 @@ if training:
 
         print('[%d epoch] Accuracy of the network on the Validation images: %d %%' % (epoch + 1, 100 * correct / total))
 
-        if epoch % 10 == 0 or epoch == 0:
-            torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
+        # if epoch % 10 == 0 or epoch == 0:
+        #     torch.save(model.state_dict(), os.path.join(PATH_SAVE, str(epoch + 1) + '_' + str(accuracy) + '.pth'))
 
         early_stopping(running_loss, model)
 
