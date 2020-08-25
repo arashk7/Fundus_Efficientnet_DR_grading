@@ -91,7 +91,7 @@ epochs = 100
 learning_rate = 1e-3
 ''' The learning rate '''
 
-transform_train = transforms.Compose([transforms.Resize((512, 512)), transforms.RandomApply([
+transform_train = transforms.Compose([transforms.Resize((220, 220)), transforms.RandomApply([
     torchvision.transforms.RandomRotation(30),
     transforms.RandomHorizontalFlip()], 0.7),
                                       transforms.ToTensor()])
@@ -100,34 +100,34 @@ transform_train = transforms.Compose([transforms.Resize((512, 512)), transforms.
 training_set = Dataset(os.path.join(BASE_TRAIN_PATH, 'regular-fundus-training', 'regular-fundus-training.csv'),
                        BASE_TRAIN_PATH,
                        transform=transform_train)
+train_generator = data.DataLoader(training_set, **params)
+# valid_size = 0.2
+# ''' Percentage of training set to use as validation '''
 
-valid_size = 0.2
-''' Percentage of training set to use as validation '''
+# # obtain training indices that will be used for validation
+# num_train = len(training_set)
+# indices = list(range(num_train))
+# np.random.shuffle(indices)
+# split = int(np.floor(valid_size * num_train))
+# train_idx, valid_idx = indices[split:], indices[:split]
+#
+# # define samplers for obtaining training and validation batches
+# train_sampler = SubsetRandomSampler(train_idx)
+# valid_sampler = SubsetRandomSampler(valid_idx)
+#
+# ''' Make a dataset of the training set '''
+#
+# training_generator = data.DataLoader(training_set, sampler=train_sampler, batch_size=batch_size)
+# ''' Train generator with the provided hyper parameters '''
+# validation_generator = data.DataLoader(training_set, sampler=valid_sampler, batch_size=batch_size)
+# ''' Train generator with the provided hyper parameters '''
 
-# obtain training indices that will be used for validation
-num_train = len(training_set)
-indices = list(range(num_train))
-np.random.shuffle(indices)
-split = int(np.floor(valid_size * num_train))
-train_idx, valid_idx = indices[split:], indices[:split]
-
-# define samplers for obtaining training and validation batches
-train_sampler = SubsetRandomSampler(train_idx)
-valid_sampler = SubsetRandomSampler(valid_idx)
-
-''' Make a dataset of the training set '''
-
-training_generator = data.DataLoader(training_set, sampler=train_sampler, batch_size=batch_size)
-''' Train generator with the provided hyper parameters '''
-validation_generator = data.DataLoader(training_set, sampler=valid_sampler, batch_size=batch_size)
-''' Train generator with the provided hyper parameters '''
-
-test_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
+validation_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
                    BASE_VAL_PATH,
                    transform=transform_train)
 ''' Make a dataset of the validation set '''
 
-test_generator = data.DataLoader(test_set, **params)
+validation_generator = data.DataLoader(validation_set, **params)
 ''' Validation generator with the provided hyper parameters '''
 
 use_cuda = torch.cuda.is_available()
@@ -181,7 +181,10 @@ epochs = 50
 early_stopping = EarlyStopping(patience=3, verbose=True)
 
 training = True
-testing = True
+testing = False
+
+def quadratic_kappa(y_hat, y):
+    return torch.tensor(cohen_kappa_score(torch.argmax(y_hat.cpu(),1), y.cpu(), weights='quadratic'),device='cuda:0')
 
 if training:
     #model.load_state_dict(torch.load('checkpoint.pt'))
@@ -192,6 +195,8 @@ if training:
         running_loss = 0.0
         ''' Set the loss to zero '''
 
+        kappa_all = 0
+        count = 0
         correct = 0
         total = 0
         tr_class_correct = list(0. for _ in classes)
@@ -201,7 +206,7 @@ if training:
         vl_class_total = list(0. for _ in classes)
 
         model.train()
-        for i, data in enumerate(training_generator, 0):
+        for i, data in enumerate(train_generator, 0):
             ''' run through batches of data from training data generator '''
 
             inputs, labels = data
@@ -218,6 +223,7 @@ if training:
             c = (predicted == labels.data).squeeze()
             correct += (predicted == labels).sum().item()
             total += labels.size(0)
+
             accuracy = float(correct) / float(total)
 
             train_history_accuracy.append(accuracy)
@@ -233,10 +239,15 @@ if training:
 
             running_loss += loss.item()
 
+            count += 1
+            kappa = quadratic_kappa(outputs, labels)
+            kappa_all += kappa.item()
             print("Train Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1), " Accuracy : ",
-                  accuracy,
-                  "Time ", round(time() - t0, 2), "s")
+                  accuracy," Kappa: "+str(kappa.item())+
+                  " Time ", round(time() - t0, 2), "s")
 
+        kappa_all = float(kappa_all) / float(count)
+        print(' kappa : %f' % (kappa_all))
         print('[%d epoch] Accuracy of the network on the training images: %d %%' % (epoch + 1, 100 * correct / total))
 
         correct = 0
@@ -277,10 +288,12 @@ if training:
                 running_loss += loss.item()
                 predict_list.append(predicted)
                 label_list.append(labels)
+
                 print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1),
                       " Accuracy : ", accuracy,
                       "Time ", round(time() - t0, 2), "s")
-
+                # kappa = cohen_kappa_score(predicted, labels, weights='quadratic')
+                # print('kappa:  '+ str(kappa))
         for k in range(len(classes)):
             if (vl_class_total[k] != 0):
                 print(
