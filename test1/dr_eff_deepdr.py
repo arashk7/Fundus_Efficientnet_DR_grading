@@ -1,9 +1,6 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from torchsummary import summary
-import PIL
-import sys
 import torch
 from time import time
 import torchvision
@@ -11,11 +8,9 @@ from PIL import Image
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils import data
-from torch.autograd import Variable
 import torchvision.transforms as transforms
 from efficientnet_pytorch import EfficientNet
-from torch.utils.data.sampler import SubsetRandomSampler
-from pytorchtools import EarlyStopping
+from test1.pytorchtools import EarlyStopping
 from sklearn.metrics import cohen_kappa_score, precision_score, recall_score, f1_score
 import os
 
@@ -142,7 +137,7 @@ model.to(device)
 print(summary(model, input_size=(3, 512, 512)))
 ''' Display the model structure '''
 
-PATH_SAVE = './Weights/'
+PATH_SAVE = '../Weights/'
 ''' Set the directory to record model's weights '''
 
 if (not os.path.exists(PATH_SAVE)):
