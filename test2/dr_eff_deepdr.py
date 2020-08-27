@@ -10,18 +10,21 @@ import torch.optim as optim
 from torch.utils import data
 import torchvision.transforms as transforms
 from efficientnet_pytorch import EfficientNet
-from test1.pytorchtools import EarlyStopping
+from test2.pytorchtools import EarlyStopping
 from sklearn.metrics import cohen_kappa_score, precision_score, recall_score, f1_score
 import os
-
-
-BASE_TRAIN_PATH = '/home/arash/Projects/Dataset/DeepDR'
-# BASE_TRAIN_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-training'
+from torchvision.transforms import functional as F
+# BASE_TRAIN_PATH = '/home/arash/Projects/Dataset/DeepDR'
+BASE_TRAIN_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-training'
 ''' Training Dataset Directory '''
 
-BASE_VAL_PATH = '/home/arash/Projects/Dataset/DeepDR'
-# BASE_VAL_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-validation'
+# BASE_VAL_PATH = '/home/arash/Projects/Dataset/DeepDR'
+BASE_VAL_PATH = 'E:\Dataset\DR\DeepDr/regular-fundus-validation'
 ''' Validation Dataset Directory '''
+
+# BASE_TEST_PATH = '/home/arash/Projects/Dataset/DeepDR/Onsite-Challenge1-2-Evaluation'
+BASE_TEST_PATH = 'E:\Dataset\DR\DeepDr\Onsite-Challenge1-2-Evaluation'
+''' Test Dataset Directory '''
 
 
 # def metricsCompute(predict, label, labels=[0, 1, 2, 3, 4]):
@@ -69,6 +72,36 @@ class Dataset(data.Dataset):
             img = self.transform(img)
         return img, label
 
+
+class TestDataset(data.Dataset):
+    def __init__(self, csv_path, images_path, transform=None):
+        ''' Initialise paths and transforms '''
+        self.train_set = pd.read_csv(csv_path, keep_default_na=False)  # Read The CSV and create the dataframe
+        self.train_path = images_path  # Images Path
+        self.transform = transform  # Augmentation Transforms
+
+    def __len__(self):
+        return len(self.train_set)
+
+    def __getitem__(self, idx):
+        '''
+        Receive element index, load the image from the path and transform it
+        :param idx:
+        Element index
+        :return:
+        Transformed image and its grade label
+        '''
+        file_name = str(self.train_set['patient_id'][idx]) + '/' + self.train_set['image_id'][idx] + '.jpg'
+        label = self.train_set['patient_DRLevel'][idx]
+        path = self.train_path + '/' + file_name
+        path = path.replace('\\', '/')
+        img = Image.open(path)  # Loading Image
+
+        if self.transform is not None:
+            img = self.transform(img)
+        return img, label
+
+
 batch_size = 16
 
 params = {'batch_size': batch_size,
@@ -76,13 +109,30 @@ params = {'batch_size': batch_size,
           }
 ''' Hyper Parameters '''
 
-epochs = 100
-''' Number of epochs '''
-
 learning_rate = 1e-3
 ''' The learning rate '''
 
-transform_train = transforms.Compose([transforms.Resize((220, 220)), transforms.RandomApply([
+from skimage.filters.rank import entropy
+from skimage.morphology import disk
+
+class BiChannel(object):
+
+    def __call__(self, img):
+        """
+        Args:
+            img (PIL Image): Image to be BiChanneled.
+
+        Returns:
+            PIL Image: BiChanneled image.
+        """
+        gray = F.to_grayscale(img,num_output_channels=1)
+        # ent = entropy(np.array(gray),disk(10))
+        # out = torch.cat(ent,img[1])
+        return gray
+
+
+
+transform_train = transforms.Compose([transforms.Resize((50, 50)), transforms.RandomApply([
     torchvision.transforms.RandomRotation(30),
     transforms.RandomHorizontalFlip()], 0.7),
                                       transforms.ToTensor()])
@@ -93,22 +143,29 @@ training_set = Dataset(os.path.join(BASE_TRAIN_PATH, 'regular-fundus-training', 
                        transform=transform_train)
 train_generator = data.DataLoader(training_set, **params)
 
-
 validation_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
-                   BASE_VAL_PATH,
-                   transform=transform_train)
+                         BASE_VAL_PATH,
+                         transform=transform_train)
 ''' Make a dataset of the validation set '''
 
 validation_generator = data.DataLoader(validation_set, **params)
 ''' Validation generator with the provided hyper parameters '''
+
+test_set = TestDataset(os.path.join(BASE_TEST_PATH, 'Onsite-Challenge1-2-Evaluation_full.csv'),
+                       BASE_TEST_PATH,
+                       transform=transform_train)
+''' Make a dataset of the test set '''
+
+test_generator = data.DataLoader(test_set, **params)
+''' Test generator with the provided hyper parameters '''
 
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ''' Initialize Cuda if it is available '''
 print(device)
 
-model = EfficientNet.from_pretrained('efficientnet-b5', num_classes=5)
-''' Loaded pretrained weights for efficientnet-b5 '''
+model = EfficientNet.from_pretrained('efficientnet-b3', num_classes=5)
+''' Loaded pretrained weights for efficientnet-b3 '''
 model.to(device)
 
 print(summary(model, input_size=(3, 512, 512)))
@@ -155,11 +212,13 @@ early_stopping = EarlyStopping(patience=3, verbose=True)
 training = True
 testing = False
 
+
 def quadratic_kappa(y_hat, y):
-    return torch.tensor(cohen_kappa_score(torch.argmax(y_hat.cpu(),1), y.cpu(), weights='quadratic'),device='cuda:0')
+    return torch.tensor(cohen_kappa_score(torch.argmax(y_hat.cpu(), 1), y.cpu(), weights='quadratic'), device='cuda:0')
+
 
 if training:
-    #model.load_state_dict(torch.load('checkpoint.pt'))
+    # model.load_state_dict(torch.load('checkpoint.pt'))
     for epoch in range(epochs):
         '''
         Epochs loop
@@ -218,13 +277,21 @@ if training:
                   accuracy,
                   " Time ", round(time() - t0, 2), "s")
 
+            predict_p = torch.argmax(outputs, dim=1)
+            predict_p = predict_p.detach().cpu().numpy()
+            predict = list(predict_p.astype('int'))
+            pred_list += predict
+            labels = labels.detach().cpu().numpy()
+            labels = list(labels.astype('int'))
+            label_list += labels
 
+        kappa_all = cohen_kappa_score(pred_list, label_list, weights='quadratic')
         print(' kappa : %f' % (kappa_all))
         print('[%d epoch] Accuracy of the network on the training images: %d %%' % (epoch + 1, 100 * correct / total))
 
         correct = 0
         total = 0
-        predict_list = []
+        pred_list = []
         label_list = []
         model.eval()
         with torch.no_grad():
@@ -250,22 +317,28 @@ if training:
                 val_history_accuracy.append(accuracy)
                 val_history_loss.append(loss)
 
-                # loss.backward()
-
                 for j in range(labels.size(0)):
                     label = labels[j]
                     vl_class_correct[label] += c[j].item()
                     vl_class_total[label] += 1
 
                 running_loss += loss.item()
-                predict_list.append(predicted)
-                label_list.append(labels)
 
                 print("Validation Epoch : ", epoch + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1),
                       " Accuracy : ", accuracy,
                       "Time ", round(time() - t0, 2), "s")
-                # kappa = cohen_kappa_score(predicted, labels, weights='quadratic')
-                # print('kappa:  '+ str(kappa))
+
+                predict_p = torch.argmax(outputs, dim=1)
+                predict_p = predict_p.detach().cpu().numpy()
+                predict = list(predict_p.astype('int'))
+                pred_list += predict
+                labels = labels.detach().cpu().numpy()
+                labels = list(labels.astype('int'))
+                label_list += labels
+
+            kappa_all = cohen_kappa_score(pred_list, label_list, weights='quadratic')
+            print(' kappa : %f' % (kappa_all))
+
         for k in range(len(classes)):
             if (vl_class_total[k] != 0):
                 print(
@@ -298,6 +371,9 @@ if testing:
 
     vl_class_correct = list(0. for _ in classes)
     vl_class_total = list(0. for _ in classes)
+
+    pred_list = []
+    label_list = []
 
     model.eval()
     with torch.no_grad():
@@ -335,6 +411,17 @@ if testing:
             print("Validation Epoch : ", 1 + 1, " Batch : ", i + 1, " Loss :  ", running_loss / (i + 1),
                   " Accuracy : ", accuracy,
                   "Time ", round(time() - t0, 2), "s")
+
+            predict_p = torch.argmax(outputs, dim=1)
+            predict_p = predict_p.detach().cpu().numpy()
+            predict = list(predict_p.astype('int'))
+            pred_list += predict
+            labels = labels.detach().cpu().numpy()
+            labels = list(labels.astype('int'))
+            label_list += labels
+
+        kappa_all = cohen_kappa_score(pred_list, label_list, weights='quadratic')
+        print(' kappa : %f' % (kappa_all))
 
     for k in range(len(classes)):
         if (vl_class_total[k] != 0):
