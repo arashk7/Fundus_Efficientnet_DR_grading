@@ -10,7 +10,7 @@ import torch.optim as optim
 from torch.utils import data
 import torchvision.transforms as transforms
 from efficientnet_pytorch import EfficientNet
-from pytorchtools import EarlyStopping
+from deepdr_bichannel.pytorchtools import EarlyStopping
 from sklearn.metrics import cohen_kappa_score, precision_score, recall_score, f1_score
 import os
 from torchvision.transforms import functional as F
@@ -26,6 +26,23 @@ BASE_VAL_PATH = '/home/arash/Projects/Dataset/DeepDR'
 BASE_TEST_PATH = '/home/arash/Projects/Dataset/DeepDR/Onsite-Challenge1-2-Evaluation'
 # BASE_TEST_PATH = 'E:\Dataset\DR\DeepDr\Onsite-Challenge1-2-Evaluation'
 ''' Test Dataset Directory '''
+
+
+# def metricsCompute(predict, label, labels=[0, 1, 2, 3, 4]):
+#     ap = []
+#     recall = []
+#     f1 = []
+#     for p in labels:
+#         fake_label = (label == p)
+#         fake_predict = (predict == p)
+#
+#         ap.append(precision_score(fake_label.ravel(), fake_predict.ravel()))
+#         recall.append(recall_score(fake_label.ravel(), fake_predict.ravel()))
+#         f1.append(f1_score(fake_label.ravel(), fake_predict.ravel()))
+#
+#     kappa = cohen_kappa_score(predict, label, weights='quadratic')
+#
+#     return np.array(ap), np.array(recall), np.array(f1), kappa
 
 
 class Dataset(data.Dataset):
@@ -115,10 +132,21 @@ class BiChannel(object):
         # out = torch.cat(ent,img[1])
         return gray
 
-
+# class MyRotationTransform:
+#     """Rotate by one of the given angles."""
+#
+#     def __init__(self, angles):
+#         self.angles = angles
+#
+#     def __call__(self, x):
+#         angle = random.choice(self.angles)
+#         return TF.rotate(x, angle)
 transform_train = transforms.Compose([transforms.Resize((512, 512)), transforms.RandomApply([
     torchvision.transforms.RandomRotation(30),
     transforms.RandomHorizontalFlip()], 0.7),
+                                      BiChannel(),
+                                      transforms.ToTensor()])
+transform_test = transforms.Compose([transforms.Resize((512, 512)),
                                       transforms.ToTensor()])
 ''' Transform Images to specific size and randomly rotate and flip them '''
 
@@ -129,7 +157,7 @@ train_generator = data.DataLoader(training_set, **params)
 
 validation_set = Dataset(os.path.join(BASE_VAL_PATH, 'regular-fundus-validation', 'regular-fundus-validation.csv'),
                          BASE_VAL_PATH,
-                         transform=transform_train)
+                         transform=transform_test)
 ''' Make a dataset of the validation set '''
 
 validation_generator = data.DataLoader(validation_set, **params)
@@ -137,7 +165,7 @@ validation_generator = data.DataLoader(validation_set, **params)
 
 test_set = TestDataset(os.path.join(BASE_TEST_PATH, 'Onsite-Challenge1-2-Evaluation_full.csv'),
                        BASE_TEST_PATH,
-                       transform=transform_train)
+                       transform=transform_test)
 ''' Make a dataset of the test set '''
 
 test_generator = data.DataLoader(test_set, **params)
@@ -192,23 +220,12 @@ epochs = 50
 ''' Number of epochs '''
 
 early_stopping = EarlyStopping(patience=3, verbose=True)
-''' Early Stopping '''
 
 training = True
 testing = False
-''' We can focus on train or testing individually '''
 
 
 def quadratic_kappa(y_hat, y):
-    '''
-    Kappa function normally use cpu variables but with this modified version, cuda version is acceptable
-    :param y_hat:
-    predicted
-    :param y:
-    ground truth
-    :return:
-    quadratic kappa
-    '''
     return torch.tensor(cohen_kappa_score(torch.argmax(y_hat.cpu(), 1), y.cpu(), weights='quadratic'), device='cuda:0')
 
 
@@ -294,11 +311,8 @@ if training:
         vl_class_total = list(0. for _ in classes)
 
         pred_list = []
-        ''' make a list for prediction of all the batches'''
         label_list = []
-        ''' make a list for labels of all the batches'''
         model.eval()
-        ''' prepare model for evaluation '''
         with torch.no_grad():
             for i, data in enumerate(validation_generator, 0):
                 ''' run through batches of data from validation data generator '''
@@ -431,6 +445,7 @@ if testing:
 
     for k in range(len(classes)):
         if (vl_class_total[k] != 0):
-            print('Validation accuracy of %5s : %2d %%' % (classes[k], 100 * vl_class_correct[k] / vl_class_total[k]))
+            print(
+                'Validation accuracy of %5s : %2d %%' % (classes[k], 100 * vl_class_correct[k] / vl_class_total[k]))
 
     print('[%d epoch] Accuracy of the network on the Validation images: %d %%' % (1 + 1, 100 * correct / total))
