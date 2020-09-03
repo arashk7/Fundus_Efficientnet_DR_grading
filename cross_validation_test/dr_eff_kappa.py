@@ -91,14 +91,15 @@ class TestDataset(data.Dataset):
         return img, label
 
 
-batch_size = 16
+batch_size = 8
 
 params = {'batch_size': batch_size,
           'shuffle': True
           }
 ''' Hyper Parameters '''
 
-learning_rate = 1e-3
+# learning_rate = 1e-3
+learning_rate = 1e-4
 ''' The learning rate '''
 
 from skimage.filters.rank import entropy
@@ -168,7 +169,8 @@ if (not os.path.exists(PATH_SAVE)):
     os.mkdir(PATH_SAVE)
     ''' If the directory does not exist, it will be created there '''
 
-criterion = nn.CrossEntropyLoss()
+# criterion = nn.CrossEntropyLoss()
+criterion = nn.SmoothL1Loss()
 ''' Set the loss function '''
 
 lr_decay = 0.99
@@ -336,7 +338,9 @@ if training:
                     ''' Set the optimizer gradients to zero '''
                     outputs = model(inputs)
 
-                    loss = criterion(outputs, torch.max(labels, 1)[1])
+                    loss = criterion(outputs, labels)
+                    # loss = criterion(outputs, torch.max(labels, 1)[1])
+
                     _, predicted = torch.max(outputs, 1)
                     _, labels = torch.max(labels, 1)
                     c = (predicted == labels.data).squeeze()
@@ -397,7 +401,7 @@ if training:
         print('fold '+str(i+1)+': '+str(fold_kappa_list[i]))
 if testing:
 
-    model.load_state_dict(torch.load('checkpoint.pt'))
+    model.load_state_dict(torch.load('checkpoint_fold_3.pt'))
     ''' Load the last checkpoint with the best model '''
     running_loss = 0.0
     ''' Set the loss to zero '''
@@ -432,8 +436,8 @@ if testing:
             accuracy = float(correct) / float(total)
             ''' Calculate total accuracy '''
 
-            val_history_accuracy.append(accuracy)
-            val_history_loss.append(loss)
+            # val_history_accuracy.append(accuracy)
+            # val_history_loss.append(loss)
 
             # loss.backward()
 
