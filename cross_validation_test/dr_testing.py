@@ -43,6 +43,7 @@ if __name__ == "__main__":
             pred_img = transform_test(image)
             pred_img = default_collate([pred_img])
             grade_result = model(pred_img).detach().cpu().numpy()
+
             grade_result = grade_result.argmax()
             result_list.append(grade_result)
             print('Image ' + str(i) + ' ---- Predict: ' + str(grade_result) + ' , GT: ' + str(dr_level[i]))
