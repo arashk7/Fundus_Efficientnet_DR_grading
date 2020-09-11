@@ -48,38 +48,16 @@
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\MyGit\Fundus_Efficientnet_DR_grading\test1" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\MyGit\Fundus_Efficientnet_DR_grading\cross_validation_test" />
       <recent name="E:\MyGit\Fundus_Efficientnet_DR_grading\deepdr_bichannel" />
       <recent name="E:\MyGit\Fundus_Efficientnet_DR_grading\test2" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\MyGit\Fundus_Efficientnet_DR_grading\test1" />
+    </key>
   </component>
-  <component name="RunManager" selected="Python.dr_testing (1)">
-    <configuration name="dr_eff_deepdr (2)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Fundus_Efficientnet_DR_grading" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test2" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test2/dr_eff_deepdr.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.dr_eff_gem">
     <configuration name="dr_eff_deepdr" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Fundus_Efficientnet_DR_grading" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -94,6 +72,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cross_validation_test/dr_eff_deepdr.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dr_eff_gem" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Fundus_Efficientnet_DR_grading" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/cross_validation_test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/cross_validation_test/dr_eff_gem.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -146,7 +146,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="dr_testing" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="functional" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Fundus_Efficientnet_DR_grading" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -154,12 +154,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test2" />
+      <option name="WORKING_DIRECTORY" value="D:/ProgramData/Anaconda3/envs/pytorch/Lib/site-packages/torch/nn" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test2/dr_testing.py" />
+      <option name="SCRIPT_NAME" value="D:/ProgramData/Anaconda3/envs/pytorch/Lib/site-packages/torch/nn/functional.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -170,11 +170,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.dr_eff_gem" />
+        <item itemvalue="Python.functional" />
         <item itemvalue="Python.dr_testing (1)" />
         <item itemvalue="Python.dr_eff_kappa" />
         <item itemvalue="Python.dr_eff_deepdr" />
-        <item itemvalue="Python.dr_eff_deepdr (2)" />
-        <item itemvalue="Python.dr_testing" />
       </list>
     </recent_temporary>
   </component>
@@ -209,7 +209,12 @@
       <workItem from="1598844935373" duration="1086000" />
       <workItem from="1598850756112" duration="16396000" />
       <workItem from="1599007937014" duration="7064000" />
-      <workItem from="1599114522831" duration="1520000" />
+      <workItem from="1599114522831" duration="2474000" />
+      <workItem from="1599120626912" duration="12000" />
+      <workItem from="1599639018215" duration="7829000" />
+      <workItem from="1599789658116" duration="142000" />
+      <workItem from="1599804880797" duration="4586000" />
+      <workItem from="1599813248278" duration="1094000" />
     </task>
     <servers />
   </component>
@@ -233,42 +238,42 @@
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
     <state width="1186" height="466" key="DebuggerActiveHint/0.0.2048.1112@0.0.2048.1112" timestamp="1598495598181" />
-    <state x="805" y="311" key="FileChooserDialogImpl" timestamp="1599100525679">
+    <state x="805" y="311" key="FileChooserDialogImpl" timestamp="1599789797637">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1599100525679" />
-    <state width="2005" height="376" key="GridCell.Tab.0.bottom" timestamp="1599100527642">
+    <state x="805" y="311" key="FileChooserDialogImpl/0.0.2048.1112@0.0.2048.1112" timestamp="1599789797637" />
+    <state width="2005" height="309" key="GridCell.Tab.0.bottom" timestamp="1599709406353">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.0.center" timestamp="1599100527642">
+    <state width="2005" height="309" key="GridCell.Tab.0.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1599709406353" />
+    <state width="2005" height="309" key="GridCell.Tab.0.center" timestamp="1599709406353">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.0.left" timestamp="1599100527642">
+    <state width="2005" height="309" key="GridCell.Tab.0.center/0.0.2048.1112@0.0.2048.1112" timestamp="1599709406353" />
+    <state width="2005" height="309" key="GridCell.Tab.0.left" timestamp="1599709406353">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.0.right" timestamp="1599100527642">
+    <state width="2005" height="309" key="GridCell.Tab.0.left/0.0.2048.1112@0.0.2048.1112" timestamp="1599709406353" />
+    <state width="2005" height="309" key="GridCell.Tab.0.right" timestamp="1599709406353">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.1.bottom" timestamp="1599100527642">
+    <state width="2005" height="309" key="GridCell.Tab.0.right/0.0.2048.1112@0.0.2048.1112" timestamp="1599709406353" />
+    <state width="2005" height="376" key="GridCell.Tab.1.bottom" timestamp="1599709361621">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.1.center" timestamp="1599100527642">
+    <state width="2005" height="376" key="GridCell.Tab.1.bottom/0.0.2048.1112@0.0.2048.1112" timestamp="1599709361621" />
+    <state width="2005" height="376" key="GridCell.Tab.1.center" timestamp="1599709361621">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.1.left" timestamp="1599100527642">
+    <state width="2005" height="376" key="GridCell.Tab.1.center/0.0.2048.1112@0.0.2048.1112" timestamp="1599709361621" />
+    <state width="2005" height="376" key="GridCell.Tab.1.left" timestamp="1599709361621">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
-    <state width="2005" height="376" key="GridCell.Tab.1.right" timestamp="1599100527642">
+    <state width="2005" height="376" key="GridCell.Tab.1.left/0.0.2048.1112@0.0.2048.1112" timestamp="1599709361621" />
+    <state width="2005" height="376" key="GridCell.Tab.1.right" timestamp="1599709361621">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
-    <state width="2005" height="376" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1599100527642" />
+    <state width="2005" height="376" key="GridCell.Tab.1.right/0.0.2048.1112@0.0.2048.1112" timestamp="1599709361621" />
     <state x="533" y="201" key="SettingsEditor" timestamp="1597382011889">
       <screen x="0" y="0" width="2048" height="1112" />
     </state>
@@ -290,16 +295,18 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_deepdr__2_.coverage" NAME="dr_eff_deepdr (2) Coverage Results" MODIFIED="1598596352870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
+    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$functional.coverage" NAME="functional Coverage Results" MODIFIED="1599709361611" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="D:/ProgramData/Anaconda3/envs/pytorch/Lib/site-packages/torch/nn" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_testing.coverage" NAME="dr_testing Coverage Results" MODIFIED="1598586188688" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$deepdr_bichannel.coverage" NAME="deepdr_bichannel Coverage Results" MODIFIED="1598580250987" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/deepdr_bichannel" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$pytest_in_test_dr_py.coverage" NAME="pytest in test_dr.py Coverage Results" MODIFIED="1598582823312" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
-    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_testing__1_.coverage" NAME="dr_testing (1) Coverage Results" MODIFIED="1599031630128" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cross_validation_test" />
+    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_testing__1_.coverage" NAME="dr_testing (1) Coverage Results" MODIFIED="1599116861315" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cross_validation_test" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_aptos.coverage" NAME="dr_eff0_aptos Coverage Results" MODIFIED="1597648493455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_kappa.coverage" NAME="dr_eff_kappa Coverage Results" MODIFIED="1599012289196" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cross_validation_test" />
+    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_gem.coverage" NAME="dr_eff_gem Coverage Results" MODIFIED="1599709406346" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cross_validation_test" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_simple.coverage" NAME="dr_eff0_simple Coverage Results" MODIFIED="1597646674502" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff0_deepdr.coverage" NAME="dr_eff0_deepdr Coverage Results" MODIFIED="1597808513199" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_deepdr__1_.coverage" NAME="dr_eff_deepdr (1) Coverage Results" MODIFIED="1598412491421" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test1" />
+    <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_deepdr__2_.coverage" NAME="dr_eff_deepdr (2) Coverage Results" MODIFIED="1598596352870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/test2" />
     <SUITE FILE_PATH="coverage/Fundus_Efficientnet_DR_grading$dr_eff_deepdr.coverage" NAME="dr_eff_deepdr Coverage Results" MODIFIED="1598861086583" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/cross_validation_test" />
   </component>
 </project>
