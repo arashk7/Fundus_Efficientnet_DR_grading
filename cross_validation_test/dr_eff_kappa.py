@@ -189,8 +189,8 @@ epochs = 50
 ''' Number of epochs '''
 
 
-training = True
-testing = False
+training = False
+testing = True
 ''' We can focus on train or testing individually '''
 
 
@@ -401,7 +401,7 @@ if training:
         print('fold '+str(i+1)+': '+str(fold_kappa_list[i]))
 if testing:
 
-    model.load_state_dict(torch.load('checkpoint_fold_3.pt'))
+    model.load_state_dict(torch.load('init.pt')) #checkpoint_fold_3.pt
     ''' Load the last checkpoint with the best model '''
     running_loss = 0.0
     ''' Set the loss to zero '''

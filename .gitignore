@@ -2,3 +2,4 @@
 Weights/11_0.9058333333333334.pth
 Weights/1_0.5483333333333333.pth
 test2/checkpoint.pt
+*.pt
